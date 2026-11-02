@@ -1,0 +1,68 @@
+name: Autoritm Web
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  sql:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: autoritm_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Schema and access rules
+        env:
+          PGPASSWORD: postgres
+        run: psql -h 127.0.0.1 -U postgres -d autoritm_test -v ON_ERROR_STOP=1 -f test/support/auth_schema.sql -f supabase/setup.sql -f supabase/tests.sql
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - name: Build
+        run: flutter build web --release --no-web-resources-cdn --pwa-strategy=none --base-href "/${{ github.event.repository.name }}/" --dart-define-from-file=config.json
+      - name: Direct links
+        env:
+          REPOSITORY_NAME: ${{ github.event.repository.name }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          base = '/' + os.environ['REPOSITORY_NAME'] + '/'
+          Path('build/web/404.html').write_text('<!doctype html><html lang="ru"><meta charset="utf-8"><title>АвтоРитм</title><script>location.replace(' + repr(base) + ' + "?__route=" + encodeURIComponent(location.pathname + location.search + location.hash));</script></html>', encoding='utf-8')
+          for path in Path('build/web').rglob('*.symbols'):
+              path.unlink()
+          PY
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+  deploy:
+    needs: [build, sql]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

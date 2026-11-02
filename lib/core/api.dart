@@ -11,6 +11,10 @@ class ApiFailure implements Exception {
     final code = error.response?.statusCode;
     final body = error.response?.data;
     final fields = <String, String>{};
+    if (body is Map &&
+        ['user_already_exists', 'email_exists'].contains(body['code'])) {
+      fields['email'] = 'Этот email уже зарегистрирован';
+    }
     if (body is Map && body['details'] is String) {
       try {
         final details = jsonDecode(body['details'] as String);
@@ -36,7 +40,11 @@ class ApiFailure implements Exception {
         body is Map
             ? '${body['message']}'
             : 'Запись изменилась или конфликтует с существующей.',
-      422 => 'Проверьте отмеченные поля.',
+      422 =>
+        fields.isEmpty && body is Map && body['message'] != null
+            ? '${body['message']}'
+            : 'Проверьте отмеченные поля.',
+      429 => 'Слишком много попыток. Подождите немного и повторите.',
       400 =>
         fields.isEmpty
             ? 'Не удалось выполнить запрос. Проверьте данные.'

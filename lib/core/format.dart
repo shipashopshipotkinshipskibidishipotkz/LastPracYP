@@ -4,7 +4,7 @@ import '../models/catalog.dart';
 final _money = NumberFormat.currency(
   locale: 'ru_RU',
   symbol: '₽',
-  decimalDigits: 0,
+  decimalDigits: 2,
 );
 String money(num value) => _money.format(value);
 String dateLabel(String value) {

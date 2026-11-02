@@ -6,6 +6,10 @@ import 'package:autoservice_web/models/record.dart';
 import 'package:autoservice_web/repositories/repository.dart';
 
 void main() {
+  test('money preserves kopecks in estimates and order totals', () {
+    expect(money(2549.99), contains('549,99'));
+    expect(money(12.5), contains('12,50'));
+  });
   test('labor discount never reduces the price of parts', () {
     expect(orderTotal(6500, 4750, 10), 10600);
     expect(orderTotal(1999.99, 850, 15), 2549.99);

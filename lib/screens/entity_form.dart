@@ -177,7 +177,7 @@ class _EntityFormScreenState extends State<EntityFormScreen> {
       data[f.key] = switch (f.kind) {
         FieldKind.relation || FieldKind.choice => _choices[f.key] ?? '',
         FieldKind.multiple => _multiple[f.key] ?? <String>[],
-        FieldKind.integer ||
+        FieldKind.integer => double.parse(value.replaceAll(',', '.')).toInt(),
         FieldKind.money => double.parse(value.replaceAll(',', '.')),
         FieldKind.dateTime =>
           DateTime.parse(

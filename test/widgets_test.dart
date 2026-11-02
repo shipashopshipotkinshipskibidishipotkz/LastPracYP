@@ -13,6 +13,7 @@ import 'package:autoservice_web/state/auth_state.dart';
 class FakeRepository implements Repository {
   bool fail = false, empty = false;
   int writes = 0;
+  Map<String, dynamic>? savedData;
   Completer<RecordPage>? pending;
   final record = const Record({
     'id': 'order000000001',
@@ -66,6 +67,7 @@ class FakeRepository implements Repository {
     String? id,
   }) async {
     writes++;
+    savedData = Map<String, dynamic>.from(data);
     return record;
   }
 
@@ -133,6 +135,30 @@ Future<void> withApp(
 }
 
 void main() {
+  testWidgets('valid numeric form keeps integer fields separate from money', (
+    tester,
+  ) async {
+    final repo = FakeRepository();
+    await withApp(tester, '/data/parts/new', repo, () async {
+      final fields = find.byType(TextFormField);
+      for (final entry
+          in [
+            'Тестовая деталь',
+            'TEST-001',
+            'Тест',
+            '150.25',
+            '3',
+          ].asMap().entries) {
+        await tester.enterText(fields.at(entry.key), entry.value);
+      }
+      await tester.tap(find.text('Сохранить'));
+      await tester.pumpAndSettle();
+      expect(repo.writes, 1);
+      expect(repo.savedData!['stock'], isA<int>());
+      expect(repo.savedData!['stock'], 3);
+      expect(repo.savedData!['price'], 150.25);
+    });
+  });
   testWidgets(
     'restored client session still checks the requested admin route',
     (tester) async {

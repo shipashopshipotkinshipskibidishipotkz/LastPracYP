@@ -14,7 +14,7 @@ class Panel extends StatelessWidget {
   Widget build(BuildContext context) => Container(
     padding: padding,
     decoration: BoxDecoration(
-      color: Colors.white,
+      color: paper,
       border: Border.all(color: line),
       borderRadius: BorderRadius.circular(14),
     ),
@@ -68,10 +68,10 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (status) {
-      'in_progress' => const Color(0xFF2764B0),
-      'ready' || 'good' || 'closed' => const Color(0xFF24805C),
-      'cancelled' || 'critical' => const Color(0xFFB03D3D),
-      'scheduled' || 'attention' => const Color(0xFF9C6A17),
+      'in_progress' => const Color(0xFF315C82),
+      'ready' || 'good' || 'closed' => const Color(0xFF316548),
+      'cancelled' || 'critical' => const Color(0xFF9B3E3E),
+      'scheduled' || 'attention' => const Color(0xFF805C1E),
       _ => muted,
     };
     return Container(

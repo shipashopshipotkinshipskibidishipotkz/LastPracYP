@@ -329,7 +329,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         color:
                                             status.key == 'in_progress'
                                                 ? accent
-                                                : const Color(0xFF92A3B6),
+                                                : const Color(0xFF879D8D),
                                       ),
                                     ),
                                   ],

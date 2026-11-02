@@ -80,7 +80,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 if (box.maxWidth >= 1000)
                   Expanded(
                     child: Container(
-                      color: ink,
+                      color: sidebar,
                       padding: const EdgeInsets.all(56),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +89,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           const Spacer(),
                           const Icon(
                             Icons.home_repair_service_outlined,
-                            color: Color(0xFFF89570),
+                            color: Color(0xFFBBD6C3),
                             size: 76,
                           ),
                           const SizedBox(height: 32),
@@ -106,7 +106,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           const Text(
                             'Автомобили, записи и заказ-наряды —\nв одном рабочем пространстве.',
                             style: TextStyle(
-                              color: Color(0xFFB4C1CF),
+                              color: Color(0xFFC6D4C9),
                               fontSize: 17,
                               height: 1.7,
                             ),
@@ -115,7 +115,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           const Text(
                             'АВТОРИТМ  /  АВТОСЕРВИС',
                             style: TextStyle(
-                              color: Color(0xFF8194A9),
+                              color: Color(0xFFAFC2B5),
                               fontSize: 12,
                             ),
                           ),
@@ -254,7 +254,7 @@ class _AuthScreenState extends State<AuthScreen> {
                                   child: Text(
                                     _notice!,
                                     style: const TextStyle(
-                                      color: Color(0xFF24805C),
+                                      color: Color(0xFF316548),
                                     ),
                                   ),
                                 ),

@@ -89,7 +89,7 @@ class Workspace extends StatelessWidget {
     final wide = MediaQuery.sizeOf(context).width >= 1100;
     final side = _sidebar(context, auth, items, path, wide);
     return Scaffold(
-      drawer: wide ? null : Drawer(backgroundColor: ink, child: side),
+      drawer: wide ? null : Drawer(backgroundColor: sidebar, child: side),
       appBar:
           wide
               ? null
@@ -108,7 +108,10 @@ class Workspace extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (wide)
-              SizedBox(width: 244, child: ColoredBox(color: ink, child: side)),
+              SizedBox(
+                width: 244,
+                child: ColoredBox(color: sidebar, child: side),
+              ),
             Expanded(
               child: Column(
                 children: [
@@ -117,7 +120,7 @@ class Workspace extends StatelessWidget {
                       height: 72,
                       padding: const EdgeInsets.symmetric(horizontal: 36),
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: paper,
                         border: Border(bottom: BorderSide(color: line)),
                       ),
                       child: Row(
@@ -130,7 +133,7 @@ class Workspace extends StatelessWidget {
                           const SizedBox(width: 10),
                           const Text(
                             'Автосервис / Рабочее пространство',
-                            style: TextStyle(color: muted, fontSize: 13),
+                            style: TextStyle(color: muted, fontSize: 14),
                           ),
                           const Spacer(),
                           TextButton.icon(
@@ -197,7 +200,7 @@ class Workspace extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 30),
         child: Text(
           auth.role.title,
-          style: const TextStyle(color: Color(0xFF9AA9BA), fontSize: 12),
+          style: const TextStyle(color: Color(0xFFBBCCBF), fontSize: 13),
         ),
       ),
       Expanded(
@@ -212,7 +215,7 @@ class Workspace extends StatelessWidget {
                       path == item.path ||
                               (item.path != '/' &&
                                   path.startsWith('${item.path}/'))
-                          ? const Color(0xFF2A3B4E)
+                          ? const Color(0xFF365044)
                           : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   child: ListTile(
@@ -225,8 +228,8 @@ class Workspace extends StatelessWidget {
                       size: 20,
                       color:
                           path == item.path
-                              ? const Color(0xFFF89570)
-                              : const Color(0xFFAAB7C7),
+                              ? const Color(0xFFBBD6C3)
+                              : const Color(0xFFBDD0C1),
                     ),
                     title: Text(
                       item.label,
@@ -234,8 +237,8 @@ class Workspace extends StatelessWidget {
                         color:
                             path == item.path
                                 ? Colors.white
-                                : const Color(0xFFCCD5E0),
-                        fontSize: 13,
+                                : const Color(0xFFE0E9E1),
+                        fontSize: 14,
                         fontWeight:
                             path == item.path
                                 ? FontWeight.w700
@@ -252,12 +255,12 @@ class Workspace extends StatelessWidget {
           ],
         ),
       ),
-      const Divider(color: Color(0xFF2C3C4E), height: 1),
+      const Divider(color: Color(0xFF4A6353), height: 1),
       ListTile(
-        leading: const Icon(Icons.logout, color: Color(0xFFAAB7C7), size: 20),
+        leading: const Icon(Icons.logout, color: Color(0xFFBDD0C1), size: 20),
         title: const Text(
           'Выйти',
-          style: TextStyle(color: Color(0xFFCBD5E1), fontSize: 13),
+          style: TextStyle(color: Color(0xFFE0E9E1), fontSize: 14),
         ),
         onTap: () => auth.logout(),
       ),
@@ -265,7 +268,7 @@ class Workspace extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(24, 0, 24, 18),
         child: Text(
           'Сервис в вашем ритме',
-          style: TextStyle(color: Color(0xFF8293A5), fontSize: 11),
+          style: TextStyle(color: Color(0xFFAFC2B5), fontSize: 12),
         ),
       ),
     ],

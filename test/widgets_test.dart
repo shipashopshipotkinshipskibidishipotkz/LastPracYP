@@ -88,6 +88,8 @@ Future<void> withApp(
   Role role = Role.admin,
   double width = 1280,
   bool settle = true,
+  bool restoring = false,
+  bool signedIn = true,
 }) async {
   tester.view.physicalSize = Size(width, 1000);
   tester.view.devicePixelRatio = 1;
@@ -97,17 +99,25 @@ Future<void> withApp(
           await SharedPreferences.getInstance(),
           'https://autoritm.example',
         )
-        ..loading = false
-        ..user = Record({
-          'id': 'user00000000001',
-          'name': 'Тестовый пользователь',
-          'email': 'user@example.com',
-          'role': role.name,
-        });
+        ..loading = restoring
+        ..user =
+            signedIn
+                ? Record({
+                  'id': 'user00000000001',
+                  'name': 'Тестовый пользователь',
+                  'email': 'user@example.com',
+                  'role': role.name,
+                })
+                : null;
   try {
     await tester.pumpWidget(
       AutoritmApp(auth: auth, repository: repo, initialLocation: route),
     );
+    if (restoring) {
+      await tester.pump();
+      auth.loading = false;
+      auth.notifyListeners();
+    }
     if (settle) {
       await tester.pumpAndSettle();
     } else {
@@ -123,6 +133,37 @@ Future<void> withApp(
 }
 
 void main() {
+  testWidgets(
+    'restored client session still checks the requested admin route',
+    (tester) async {
+      await withApp(
+        tester,
+        '/admin',
+        FakeRepository(),
+        () async {
+          expect(find.text('Доступ закрыт'), findsOneWidget);
+          expect(find.text('Управление сервисом'), findsNothing);
+        },
+        role: Role.client,
+        restoring: true,
+      );
+    },
+  );
+  testWidgets('an unauthenticated restored route leads to login', (
+    tester,
+  ) async {
+    await withApp(
+      tester,
+      '/admin',
+      FakeRepository(),
+      () async {
+        expect(find.text('С возвращением'), findsOneWidget);
+        expect(find.text('Управление сервисом'), findsNothing);
+      },
+      restoring: true,
+      signedIn: false,
+    );
+  });
   testWidgets('list displays a loading indicator while awaiting the API', (
     tester,
   ) async {

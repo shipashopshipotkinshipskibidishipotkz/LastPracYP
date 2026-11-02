@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'core/theme.dart';
 import 'models/catalog.dart';
+import 'models/record.dart';
 import 'repositories/repository.dart';
 import 'screens/auth_screen.dart';
 import 'screens/dashboard.dart';
@@ -25,6 +26,17 @@ String safeNext(String? input) {
     return '/';
   }
   return uri.toString();
+}
+
+bool routeAllowed(Role role, Uri uri) {
+  if (!canOpen(role, uri.path)) return false;
+  if (uri.path.startsWith('/data/')) {
+    final segments = uri.pathSegments;
+    final spec = entity(segments[1]);
+    if (segments.last == 'new' && !spec.canWrite(role)) return false;
+    if (segments.last == 'edit' && !spec.canEdit(role)) return false;
+  }
+  return true;
 }
 
 class AutoritmApp extends StatefulWidget {
@@ -53,27 +65,21 @@ class _AutoritmAppState extends State<AutoritmApp> {
             ? null
             : '/loading?next=${Uri.encodeComponent(state.uri.toString())}';
       }
-      if (path == '/loading') {
-        return safeNext(state.uri.queryParameters['next']);
-      }
+      final requested =
+          path == '/loading'
+              ? Uri.parse(safeNext(state.uri.queryParameters['next']))
+              : state.uri;
       if (!auth.signedIn) {
         return authPage
             ? null
-            : '/login?next=${Uri.encodeComponent(state.uri.toString())}';
+            : '/login?next=${Uri.encodeComponent(requested.toString())}';
       }
       if (authPage) {
         final next = safeNext(state.uri.queryParameters['next']);
-        return canOpen(auth.role, Uri.parse(next).path) ? next : '/';
+        return routeAllowed(auth.role, Uri.parse(next)) ? next : '/forbidden';
       }
-      if (!canOpen(auth.role, path)) return '/forbidden';
-      if (path.startsWith('/data/')) {
-        final segments = state.uri.pathSegments;
-        final spec = entity(segments[1]);
-        if ((segments.last == 'new' && !spec.canWrite(auth.role)) ||
-            (segments.last == 'edit' && !spec.canEdit(auth.role))) {
-          return '/forbidden';
-        }
-      }
+      if (!routeAllowed(auth.role, requested)) return '/forbidden';
+      if (path == '/loading') return requested.toString();
       return null;
     },
     routes: [

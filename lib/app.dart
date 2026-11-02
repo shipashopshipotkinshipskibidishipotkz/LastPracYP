@@ -126,6 +126,7 @@ class _AutoritmAppState extends State<AutoritmApp> {
                 (_, state) => EntityListScreen(
                   entity(state.pathParameters['collection']!),
                   state.uri,
+                  key: ValueKey(state.pathParameters['collection']),
                 ),
           ),
           GoRoute(

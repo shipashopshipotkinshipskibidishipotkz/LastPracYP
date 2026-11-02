@@ -55,13 +55,17 @@ class _EntityListScreenState extends State<EntityListScreen> {
   }
 
   Future<void> _loadOptions() async {
+    final repository = context.read<Repository>();
+    final state = _state;
     for (final f in _filterFields.where((f) => f.kind == FieldKind.relation)) {
+      if (!mounted || state != _state) return;
       try {
-        final result = await context.read<Repository>().options(
+        final result = await repository.options(
           f.target!,
           filters: f.key == 'master' ? {'role': 'master'} : const {},
         );
-        if (mounted) setState(() => _options[f.key] = result);
+        if (!mounted || state != _state) return;
+        setState(() => _options[f.key] = result);
       } on ApiFailure {
         /* The main list provides a visible retry if offline. */
       }
